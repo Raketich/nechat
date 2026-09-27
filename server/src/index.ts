@@ -14,12 +14,14 @@ const app = new Hono()
 
 app.use(logger())
 
-app.get('/api/health', (c) => c.json({ ok: true }))
+const model = process.env.OPENROUTER_MODEL ?? 'google/gemma-4-31b-it:free'
+
+app.get('/api/health', (c) => c.json({ ok: true, model }))
 
 app.route(
   '/',
   createChatRouter(
-    () => process.env.OPENROUTER_MODEL ?? 'google/gemma-4-31b-it:free',
+    () => model,
     () => process.env.OPENROUTER_API_KEY,
   ),
 )
