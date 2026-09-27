@@ -10,6 +10,7 @@ const dictionaries = {
     typing: 'Модель печатает',
     you: 'Вы',
     assistant: 'Модель',
+    stoppedNote: 'Генерация остановлена',
   },
   en: {
     send: 'Send',
@@ -18,6 +19,7 @@ const dictionaries = {
     typing: 'Model is typing',
     you: 'You',
     assistant: 'Model',
+    stoppedNote: 'Generation stopped',
   },
 } as const
 

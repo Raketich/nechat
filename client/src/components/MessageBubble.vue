@@ -20,6 +20,7 @@ const isTyping = computed(
       {{ t('typing') }}<span class="bubble__dots" aria-hidden="true"><i /><i /><i /></span>
     </p>
     <p v-else-if="message.content" class="bubble__text">{{ message.content }}</p>
+    <p v-if="message.status === 'stopped'" class="bubble__stopped">— {{ t('stoppedNote') }}</p>
     <p v-if="message.status === 'error' && message.error" class="bubble__error" role="alert">
       ⚠ {{ message.error.message }}
     </p>
@@ -110,5 +111,12 @@ const isTyping = computed(
   background: var(--error-surface);
   color: var(--error);
   font-size: 0.85rem;
+}
+
+.bubble__stopped {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-style: italic;
 }
 </style>

@@ -2,9 +2,9 @@
 import { ref } from 'vue'
 import { useI18n } from '../composables/useI18n'
 
-defineProps<{ disabled: boolean }>()
+defineProps<{ streaming: boolean }>()
 
-const emit = defineEmits<{ send: [text: string] }>()
+const emit = defineEmits<{ send: [text: string]; stop: [] }>()
 
 const { t } = useI18n()
 const draft = ref('')
@@ -35,9 +35,17 @@ function onKeydown(event: KeyboardEvent) {
       :aria-label="t('inputPlaceholder')"
       @keydown="onKeydown"
     />
-    <button type="submit" class="input-bar__send" :disabled="disabled">
-      {{ t('send') }}
+    <!-- One slot, two roles: Send when idle, Stop while generating. The input
+         stays editable during generation so the interface never locks up. -->
+    <button
+      v-if="streaming"
+      type="button"
+      class="input-bar__button input-bar__button--stop"
+      @click="emit('stop')"
+    >
+      {{ t('stop') }}
     </button>
+    <button v-else type="submit" class="input-bar__button">{{ t('send') }}</button>
   </form>
 </template>
 
@@ -62,7 +70,7 @@ function onKeydown(event: KeyboardEvent) {
   line-height: 1.4;
 }
 
-.input-bar__send {
+.input-bar__button {
   min-height: 44px;
   padding: 0 18px;
   border-radius: var(--radius-m);
@@ -72,12 +80,12 @@ function onKeydown(event: KeyboardEvent) {
   transition: background 0.15s ease;
 }
 
-.input-bar__send:hover:not(:disabled) {
+.input-bar__button:hover {
   background: var(--accent-hover);
 }
 
-.input-bar__send:disabled {
-  opacity: 0.45;
-  cursor: default;
+.input-bar__button--stop {
+  background: var(--error);
+  color: var(--error-surface);
 }
 </style>
