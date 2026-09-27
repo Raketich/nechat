@@ -63,6 +63,10 @@ function detectLang(): Lang {
 
 const lang = ref<Lang>(detectLang())
 
+// Keep <html lang> in sync with the UI language from the very first render,
+// not only after an explicit toggle (index.html ships a static default).
+document.documentElement.lang = lang.value
+
 export function useI18n() {
   function t(key: MessageKey): string {
     return dictionaries[lang.value][key]

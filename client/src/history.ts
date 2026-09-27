@@ -31,10 +31,23 @@ function reviveMessage(item: StoredMessage, index: number): UiMessage | null {
   }
   if (status !== 'done' && status !== 'stopped' && status !== 'error') return null
 
-  const error =
-    typeof item.error === 'object' && item.error !== null
-      ? (item.error as UiMessage['error'])
-      : undefined
+  // Only well-formed error payloads survive the roundtrip; anything else
+  // disqualifies the entry rather than rendering a broken error block.
+  let error: UiMessage['error']
+  if (item.error !== undefined) {
+    const e = item.error as Record<string, unknown>
+    if (
+      typeof e !== 'object' ||
+      e === null ||
+      typeof e.code !== 'number' ||
+      typeof e.message !== 'string' ||
+      typeof e.retriable !== 'boolean' ||
+      typeof e.partial !== 'boolean'
+    ) {
+      return null
+    }
+    error = e as unknown as UiMessage['error']
+  }
   if (status === 'error' && !error) return null
 
   return {

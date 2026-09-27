@@ -3,7 +3,7 @@ import { ref, watch } from 'vue'
 import { loadDraft, saveDraft } from '../history'
 import { useI18n } from '../composables/useI18n'
 
-defineProps<{ streaming: boolean }>()
+const props = defineProps<{ streaming: boolean }>()
 
 const emit = defineEmits<{ send: [text: string]; stop: [] }>()
 
@@ -14,6 +14,9 @@ const draft = ref(loadDraft())
 watch(draft, saveDraft)
 
 function submit() {
+  // While generating, Enter must not swallow the draft: useChat would
+  // ignore the send, and the text would be lost silently.
+  if (props.streaming) return
   const text = draft.value
   if (!text.trim()) return
   emit('send', text)
