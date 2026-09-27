@@ -11,6 +11,12 @@ const dictionaries = {
     you: 'Вы',
     assistant: 'Модель',
     stoppedNote: 'Генерация остановлена',
+    errorRateLimited: 'Лимит бесплатной модели исчерпан — подождите немного и попробуйте снова.',
+    errorTimeout: 'Модель отвечала слишком долго. Попробуйте ещё раз.',
+    errorNetwork: 'Проблема с сетью. Проверьте соединение и попробуйте снова.',
+    errorGeneric: 'Не получилось получить ответ от модели.',
+    retry: 'Повторить',
+    partialNote: 'Ответ получен не полностью',
   },
   en: {
     send: 'Send',
@@ -20,6 +26,12 @@ const dictionaries = {
     you: 'You',
     assistant: 'Model',
     stoppedNote: 'Generation stopped',
+    errorRateLimited: 'The free model rate limit is hit — wait a bit and try again.',
+    errorTimeout: 'The model took too long to respond. Please try again.',
+    errorNetwork: 'Network problem. Check your connection and try again.',
+    errorGeneric: 'Failed to get a response from the model.',
+    retry: 'Retry',
+    partialNote: 'The response was cut short',
   },
 } as const
 

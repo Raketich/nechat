@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from '../composables/useI18n'
+import { errorKeyFor } from '../errors'
 import type { UiMessage } from '../types'
 
 const props = defineProps<{ message: UiMessage }>()
+
+const emit = defineEmits<{ retry: [] }>()
 
 const { t } = useI18n()
 
@@ -11,6 +14,10 @@ const isUser = computed(() => props.message.role === 'user')
 const isTyping = computed(
   () => props.message.status === 'streaming' && props.message.content.length === 0,
 )
+
+// Human wording per failure class; raw upstream text stays in the title
+// attribute for the curious, not in the user's face.
+const errorKey = computed(() => errorKeyFor(props.message.error?.code))
 </script>
 
 <template>
@@ -21,9 +28,21 @@ const isTyping = computed(
     </p>
     <p v-else-if="message.content" class="bubble__text">{{ message.content }}</p>
     <p v-if="message.status === 'stopped'" class="bubble__stopped">— {{ t('stoppedNote') }}</p>
-    <p v-if="message.status === 'error' && message.error" class="bubble__error" role="alert">
-      ⚠ {{ message.error.message }}
-    </p>
+    <div v-if="message.status === 'error' && message.error" class="bubble__error" role="alert">
+      <p class="bubble__error-text">
+        {{ errorKey ? t(errorKey) : message.error.message }}
+        <span v-if="message.error.partial"> {{ t('partialNote') }}.</span>
+      </p>
+      <button
+        v-if="message.error.retriable"
+        type="button"
+        class="bubble__retry"
+        :title="message.error.message"
+        @click="emit('retry')"
+      >
+        ⟳ {{ t('retry') }}
+      </button>
+    </div>
   </article>
 </template>
 
@@ -111,6 +130,23 @@ const isTyping = computed(
   background: var(--error-surface);
   color: var(--error);
   font-size: 0.85rem;
+}
+
+.bubble__error-text {
+  margin: 0;
+}
+
+.bubble__retry {
+  margin-top: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-s);
+  border: 1px solid currentColor;
+  color: inherit;
+  font-size: 0.85rem;
+}
+
+.bubble__retry:hover {
+  background: rgb(127 127 127 / 0.15);
 }
 
 .bubble__stopped {

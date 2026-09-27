@@ -96,10 +96,17 @@ export function createChatRouter(getModel: () => string, getApiKey: () => string
 
         if (!response.ok || !response.body) {
           const detail = await response.text().catch(() => '')
+          let message = detail.slice(0, 500) || `OpenRouter responded ${response.status}`
+          try {
+            const parsed = JSON.parse(detail) as { error?: { message?: string } }
+            message = parsed.error?.message ?? message
+          } catch {
+            // not JSON — keep the raw slice
+          }
           await send({
             type: 'error',
             code: response.status,
-            message: detail.slice(0, 500) || `OpenRouter responded ${response.status}`,
+            message,
             retriable: retriableStatus(response.status),
             partial: false,
           })

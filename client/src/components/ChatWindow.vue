@@ -4,7 +4,7 @@ import { useChat } from '../composables/useChat'
 import MessageList from './MessageList.vue'
 import ChatInput from './ChatInput.vue'
 
-const { messages, isStreaming, send, stop } = useChat()
+const { messages, isStreaming, send, stop, retry } = useChat()
 
 // Esc stops the generation from anywhere on the page (assignment requirement).
 function onKeydown(event: KeyboardEvent) {
@@ -19,7 +19,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
 <template>
   <main class="chat">
-    <MessageList :messages="messages" />
+    <MessageList :messages="messages" @retry="retry" />
     <ChatInput :streaming="isStreaming" @send="send" @stop="stop" />
   </main>
 </template>

@@ -5,6 +5,8 @@ import MessageBubble from './MessageBubble.vue'
 
 const props = defineProps<{ messages: UiMessage[] }>()
 
+const emit = defineEmits<{ retry: [] }>()
+
 const scroller = ref<HTMLElement | null>(null)
 
 // Simple follow-the-stream autoscroll: keep the newest content in view while
@@ -33,7 +35,7 @@ watch(
     aria-live="polite"
     :aria-busy="props.messages.some((m) => m.status === 'streaming')"
   >
-    <MessageBubble v-for="m in props.messages" :key="m.id" :message="m" />
+    <MessageBubble v-for="m in props.messages" :key="m.id" :message="m" @retry="emit('retry')" />
   </section>
 </template>
 
