@@ -6,7 +6,7 @@ const dictionaries = {
   ru: {
     send: 'Отправить',
     stop: 'Остановить',
-    inputPlaceholder: 'Напишите сообщение…',
+    inputPlaceholder: 'Сообщение…',
     typing: 'Модель печатает',
     you: 'Вы',
     assistant: 'Модель',
@@ -17,6 +17,14 @@ const dictionaries = {
     errorGeneric: 'Не получилось получить ответ от модели.',
     retry: 'Повторить',
     partialNote: 'Ответ получен не полностью',
+    emptyTitle: 'Чем займёмся?',
+    emptySubtitle: 'Задайте вопрос или выберите пример ниже',
+    promptExample1: 'Объясни, что такое квантовая запутанность, простыми словами',
+    promptExample2: 'Напиши хайку про осенний дождь',
+    promptExample3: 'Составь план тренировки на 20 минут дома',
+    themeLight: 'Светлая тема',
+    themeDark: 'Тёмная тема',
+    langLabel: 'Переключить язык',
   },
   en: {
     send: 'Send',
@@ -32,6 +40,14 @@ const dictionaries = {
     errorGeneric: 'Failed to get a response from the model.',
     retry: 'Retry',
     partialNote: 'The response was cut short',
+    emptyTitle: 'What are we working on?',
+    emptySubtitle: 'Ask a question or pick an example below',
+    promptExample1: 'Explain quantum entanglement in simple words',
+    promptExample2: 'Write a haiku about autumn rain',
+    promptExample3: 'Put together a 20-minute home workout plan',
+    themeLight: 'Light theme',
+    themeDark: 'Dark theme',
+    langLabel: 'Switch language',
   },
 } as const
 

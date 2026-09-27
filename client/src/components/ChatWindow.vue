@@ -3,6 +3,7 @@ import { onBeforeUnmount, onMounted } from 'vue'
 import { useChat } from '../composables/useChat'
 import MessageList from './MessageList.vue'
 import ChatInput from './ChatInput.vue'
+import EmptyState from './EmptyState.vue'
 
 const { messages, isStreaming, send, stop, retry } = useChat()
 
@@ -19,7 +20,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
 <template>
   <main class="chat">
-    <MessageList :messages="messages" @retry="retry" />
+    <!-- The chat log is replaced by the empty state only before the first
+         message; the input bar stays visible the whole time. -->
+    <EmptyState v-if="messages.length === 0" @prompt="send" />
+    <MessageList v-else :messages="messages" @retry="retry" />
     <ChatInput :streaming="isStreaming" @send="send" @stop="stop" />
   </main>
 </template>

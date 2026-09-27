@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from '../composables/useI18n'
+import { renderMarkdown } from '../markdown'
 import { errorKeyFor } from '../errors'
 import type { UiMessage } from '../types'
 
@@ -15,6 +16,12 @@ const isTyping = computed(
   () => props.message.status === 'streaming' && props.message.content.length === 0,
 )
 
+// Assistant replies arrive as markdown (streaming included); user input stays
+// plain text. renderMarkdown escapes HTML and sanitizes the output.
+const renderedContent = computed(() =>
+  isUser.value ? null : renderMarkdown(props.message.content),
+)
+
 // Human wording per failure class; raw upstream text stays in the title
 // attribute for the curious, not in the user's face.
 const errorKey = computed(() => errorKeyFor(props.message.error?.code))
@@ -26,6 +33,8 @@ const errorKey = computed(() => errorKeyFor(props.message.error?.code))
     <p v-if="isTyping" class="bubble__typing" role="status">
       {{ t('typing') }}<span class="bubble__dots" aria-hidden="true"><i /><i /><i /></span>
     </p>
+    <!-- eslint-disable-next-line vue/no-v-html — content is sanitized in renderMarkdown -->
+    <div v-else-if="!isUser && renderedContent" class="bubble__md" v-html="renderedContent" />
     <p v-else-if="message.content" class="bubble__text">{{ message.content }}</p>
     <p v-if="message.status === 'stopped'" class="bubble__stopped">— {{ t('stoppedNote') }}</p>
     <div v-if="message.status === 'error' && message.error" class="bubble__error" role="alert">
@@ -154,5 +163,52 @@ const errorKey = computed(() => errorKeyFor(props.message.error?.code))
   color: var(--text-muted);
   font-size: 0.8rem;
   font-style: italic;
+}
+
+/* Markdown output */
+.bubble__md :deep(p) {
+  margin: 0 0 8px;
+}
+
+.bubble__md :deep(p:last-child) {
+  margin-bottom: 0;
+}
+
+.bubble__md :deep(ul),
+.bubble__md :deep(ol) {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+
+.bubble__md :deep(code) {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background: var(--surface-2);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.bubble__md :deep(pre) {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  padding: 10px 12px;
+  overflow-x: auto;
+}
+
+.bubble__md :deep(pre code) {
+  background: none;
+  padding: 0;
+}
+
+.bubble__md :deep(a) {
+  color: var(--accent);
+}
+
+.bubble__md :deep(blockquote) {
+  margin: 0 0 8px;
+  padding-left: 12px;
+  border-left: 3px solid var(--border);
+  color: var(--text-muted);
 }
 </style>
