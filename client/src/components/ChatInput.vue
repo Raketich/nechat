@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { loadDraft, saveDraft } from '../history'
 import { useI18n } from '../composables/useI18n'
 
 defineProps<{ streaming: boolean }>()
@@ -7,7 +8,10 @@ defineProps<{ streaming: boolean }>()
 const emit = defineEmits<{ send: [text: string]; stop: [] }>()
 
 const { t } = useI18n()
-const draft = ref('')
+
+// The unsent draft survives reloads alongside the history.
+const draft = ref(loadDraft())
+watch(draft, saveDraft)
 
 function submit() {
   const text = draft.value

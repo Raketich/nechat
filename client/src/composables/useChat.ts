@@ -1,4 +1,5 @@
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
+import { loadHistory, saveHistory } from '../history'
 import type { ApiMessage, ChatEvent, UiMessage } from '../types'
 
 /** Collect `data: {...}` lines from the SSE byte stream. */
@@ -27,9 +28,17 @@ async function* sseEvents(res: Response): AsyncGenerator<ChatEvent> {
 }
 
 export function useChat() {
-  const messages = ref<UiMessage[]>([])
+  const messages = ref<UiMessage[]>(loadHistory())
   const isStreaming = computed(() =>
     messages.value.some((m) => m.status === 'streaming'),
+  )
+
+  // Persist on every change (streaming deltas included) so a reload keeps
+  // whatever text has already arrived.
+  watch(
+    messages,
+    (value) => saveHistory(value.map((m) => ({ ...m }))),
+    { deep: true },
   )
 
   let controller: AbortController | null = null
