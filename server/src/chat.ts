@@ -4,6 +4,9 @@ import type { ChatEvent, ChatMessage, Role } from './protocol'
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
 
+// Test hook: point at a local mock to exercise streaming/abort without a key.
+const upstreamUrl = () => process.env.OPENROUTER_URL ?? OPENROUTER_URL
+
 /** Hard ceiling for a single generation, incl. model queueing time. */
 const UPSTREAM_TIMEOUT_MS = 120_000
 const MAX_MESSAGES = 100
@@ -74,7 +77,7 @@ export function createChatRouter(getModel: () => string, getApiKey: () => string
       const signal = AbortSignal.any([upstream.signal, timer])
 
       try {
-        const response = await fetch(OPENROUTER_URL, {
+        const response = await fetch(upstreamUrl(), {
           method: 'POST',
           signal,
           headers: {
@@ -93,10 +96,17 @@ export function createChatRouter(getModel: () => string, getApiKey: () => string
 
         if (!response.ok || !response.body) {
           const detail = await response.text().catch(() => '')
+          let message = detail.slice(0, 500) || `OpenRouter responded ${response.status}`
+          try {
+            const parsed = JSON.parse(detail) as { error?: { message?: string } }
+            message = parsed.error?.message ?? message
+          } catch {
+            // not JSON — keep the raw slice
+          }
           await send({
             type: 'error',
             code: response.status,
-            message: detail.slice(0, 500) || `OpenRouter responded ${response.status}`,
+            message,
             retriable: retriableStatus(response.status),
             partial: false,
           })

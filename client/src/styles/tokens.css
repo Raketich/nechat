@@ -1,0 +1,46 @@
+/* Design tokens: light is the default, dark is applied via [data-theme="dark"].
+   The theme composable sets data-theme on <html> (from stored preference or
+   the OS setting), so there is a single source of truth. */
+
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #eef0f3;
+  --text: #1a1d21;
+  --text-muted: #5f6771;
+  --border: #d9dee4;
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-contrast: #ffffff;
+  --error: #b3261e;
+  --error-surface: #fdeceb;
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+
+  --radius-s: 8px;
+  --radius-m: 14px;
+  --radius-l: 20px;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 4px 16px rgb(0 0 0 / 0.06);
+
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #14161a;
+  --surface: #1d2025;
+  --surface-2: #262a30;
+  --text: #e8eaed;
+  --text-muted: #9aa3ad;
+  --border: #33383f;
+  --accent: #8b83f7;
+  --accent-hover: #9d96f9;
+  --accent-contrast: #14161a;
+  --error: #f2b8b5;
+  --error-surface: #3a2624;
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 16px rgb(0 0 0 / 0.3);
+
+  color-scheme: dark;
+}
