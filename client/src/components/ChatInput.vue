@@ -62,8 +62,9 @@ function onKeydown(event: KeyboardEvent) {
   align-items: flex-end;
   gap: 10px;
   padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  /* No own background: on wide screens a floating colored slab reads as a
+     mistake. The field itself carries the surface color instead. */
   border-top: 1px solid var(--border);
-  background: var(--surface);
 }
 
 .input-bar__field {
@@ -73,7 +74,7 @@ function onKeydown(event: KeyboardEvent) {
   padding: 10px 14px;
   border-radius: var(--radius-m);
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--surface);
   line-height: 1.4;
 }
 
