@@ -30,6 +30,29 @@
 
 Проверки: `npm run lint` (типы в обоих пакетах), `npm test` (Vitest).
 
+### Альтернатива: всё приложение в одном контейнере
+
+В прод-режиме сервер сам раздаёт собранный клиент (SPA-fallback включён),
+поэтому приложение целиком живёт в одном образе:
+
+```bash
+docker build -t nechat .
+docker run --rm -p 8787:8787 -e OPENROUTER_API_KEY=sk-or-v1-... nechat
+# открыть http://localhost:8787
+```
+
+Ключ передаётся переменной окружения при запуске и не запекается в образ.
+
+## CI/CD
+
+- **CI** (`.github/workflows/ci.yml`) — на каждый push в `main` и каждый PR:
+  `npm ci` → тайп-чек обоих пакетов → Vitest → сборка клиента.
+- **Release** (`.github/workflows/release.yml`) — на каждый мерж в `main`:
+  сборка Docker-образа → runtime smoke-тест (контейнеру подсовывается
+  заведомо невалидный ключ, проверяются `/`, `/api/health`, SPA-fallback и
+  SSE-ответ `/api/chat`) → публикация в `ghcr.io/<repo>:latest` (+ тег по sha).
+  Никаких секретов, кроме стандартного `GITHUB_TOKEN`, не требуется.
+
 ## Как это устроено
 
 ```
